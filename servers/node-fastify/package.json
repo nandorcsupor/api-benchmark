@@ -1,0 +1,10 @@
+{
+  "name": "node-fastify-server",
+  "private": true,
+  "type": "module",
+  "main": "server.js",
+  "scripts": { "start": "node server.js" },
+  "dependencies": {
+    "fastify": "^5.6.1"
+  }
+}

@@ -1,0 +1,6 @@
+
+serialising the same 50-product page:
+  JSON.stringify (Express path)      13.1 us/op  ->  76,379 ops/s
+  fast-json-stringify (Fastify path) 17.5 us/op  ->  57,263 ops/s
+
+fast-json-stringify is 0.75x native (below 1.00 means it is SLOWER)

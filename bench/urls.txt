@@ -1,0 +1,53 @@
+# Parity URLs. Fetched from all 4 servers and deep-compared against the Rust response.
+# Lines starting with # are comments. Paths only; the host is added by parity.mjs.
+
+# every category, default params (sort=price_asc, limit=20)
+/products?category=electronics
+/products?category=books
+/products?category=home
+/products?category=toys
+/products?category=sports
+/products?category=beauty
+/products?category=garden
+/products?category=grocery
+/products?category=fashion
+/products?category=automotive
+
+# every sort. rating_desc over 1000 products has ~39 products per rating bucket,
+# so limit=50 only agrees across stacks if the id tie-break is identical.
+/products?category=books&sort=price_asc&limit=50
+/products?category=books&sort=price_desc&limit=50
+/products?category=books&sort=rating_desc&limit=50
+
+# limit 1 / 20 / 50 / 100
+/products?category=electronics&sort=rating_desc&limit=1
+/products?category=electronics&sort=rating_desc&limit=20
+/products?category=electronics&sort=rating_desc&limit=50
+/products?category=electronics&sort=rating_desc&limit=100
+
+# empty result from a valid but impossible price window
+/products?category=books&min_price=900&max_price=100
+
+# unknown category: 200 with {"total":0,"items":[]}. Second one checks case sensitivity,
+# third one pins that a present-but-empty category is "matches nothing", not a bad request.
+/products?category=widgets
+/products?category=Books
+/products?category=
+
+# boundary prices, exactly equal to a real product price (inclusive >= and <=)
+/products?category=books&min_price=1.14&max_price=1.14&limit=100
+/products?category=books&min_price=999.74&max_price=999.74&limit=100
+/products?category=books&min_price=1.14&limit=100
+/products?category=books&max_price=1.14&limit=100
+/products?category=electronics&min_price=2.5&max_price=999.27&limit=100
+# grocery has two in-stock products at exactly 883.96 (id 162 and 8294): price tie, id order
+/products?category=grocery&min_price=883.96&max_price=883.96&limit=100
+
+# the shape the load generator sends
+/products?category=home&min_price=100&max_price=800&sort=price_desc&limit=50
+/products?category=sports&min_price=300&max_price=600&sort=rating_desc&limit=50
+/products?category=automotive&min_price=200&max_price=900&sort=price_asc&limit=50
+
+# explicit zero lower bound, and an upper bound above every price
+/products?category=toys&min_price=0&max_price=1000&limit=100
+/products?category=beauty&min_price=0&limit=100

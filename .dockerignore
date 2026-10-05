@@ -1,0 +1,17 @@
+.git
+**/node_modules
+**/target
+**/__pycache__
+.venv
+out
+out-mock
+results
+render
+bench
+*.md
+Makefile
+experiments
+.env
+.env.*
+*.log
+.DS_Store

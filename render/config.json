@@ -1,0 +1,11 @@
+{
+  "baseline_stack": "express",
+  "machine_label": "Intel Core i9-12900K (WSL2)",
+  "companies": [
+    { "name": "Company A", "monthly_bill_usd": 2500 },
+    { "name": "Company B", "monthly_bill_usd": 20000 }
+  ],
+  "rewrite_price_usd": 20000,
+  "conservative_factor": 0.5,
+  "verdict": { "go_max_months": 3, "not_yet_max_months": 18 }
+}

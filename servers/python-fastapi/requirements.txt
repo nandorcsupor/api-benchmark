@@ -1,0 +1,39 @@
+# Pinned to exactly what was measured; see results/results.json for the run these
+# versions produced. The full transitive closure is pinned, not just the three
+# direct dependencies: uvloop (event loop), httptools (HTTP parser) and
+# pydantic-core (compiled validation + serialisation) are all on the hot path, so
+# letting them float would move the number this repo publishes.
+# Regenerate with:
+#   docker run --rm --entrypoint pip api-benchmark/python-fastapi:latest freeze
+
+# direct
+fastapi==0.142.2
+pydantic==2.13.5
+uvicorn[standard]==0.54.0
+
+# via fastapi
+annotated-doc==0.0.5
+opentelemetry-api==1.45.0
+starlette==1.7.0
+typing-inspection==0.4.4
+typing_extensions==4.16.0
+
+# via pydantic
+annotated-types==0.8.0
+pydantic_core==2.46.5
+
+# via starlette
+anyio==4.15.1
+idna==3.20
+
+# via uvicorn
+click==8.5.0
+h11==0.16.0
+
+# via uvicorn[standard]
+httptools==0.8.0
+python-dotenv==1.2.4
+PyYAML==6.0.3
+uvloop==0.23.0; sys_platform != "win32"
+watchfiles==1.3.0
+websockets==17.1

@@ -1,0 +1,10 @@
+{
+  "name": "node-express-server",
+  "private": true,
+  "type": "module",
+  "main": "server.js",
+  "scripts": { "start": "node server.js" },
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}

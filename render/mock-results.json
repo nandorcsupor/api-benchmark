@@ -1,0 +1,13 @@
+{
+  "mock": true,
+  "date": "2026-10-03",
+  "machine": { "cpu": "Mock data (Sharkbench ratios)" },
+  "setup": { "products": 10000, "connections": 64, "runs": 3, "duration_s": 30, "fixed_rate_rps": 500,
+             "endpoint_short": "Catalog endpoint, filter + sort + JSON over 10k products" },
+  "stacks": {
+    "axum":    { "rps": 21030, "p99_ms": 1.6,  "peak_mem_mb": 8.5 },
+    "fastify": { "rps": 9340,  "p99_ms": 3.4,  "peak_mem_mb": 57.0 },
+    "express": { "rps": 5766,  "p99_ms": 5.5,  "peak_mem_mb": 82.5 },
+    "fastapi": { "rps": 1185,  "p99_ms": 21.0, "peak_mem_mb": 41.2 }
+  }
+}

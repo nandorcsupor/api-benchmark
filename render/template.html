@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Rewrite it in Rust: hype or worth it?</title>
+<link rel="stylesheet" href="./node_modules/@fontsource/inter/400.css">
+<link rel="stylesheet" href="./node_modules/@fontsource/inter/500.css">
+<link rel="stylesheet" href="./node_modules/@fontsource/inter/600.css">
+<link rel="stylesheet" href="./node_modules/@fontsource/inter/700.css">
+<link rel="stylesheet" href="./node_modules/@fontsource/inter/800.css">
+<style>
+@page { size: 1080px 1350px; margin: 0; }
+:root {
+  --bg: #0d0d0d;
+  --surface: #1a1a19;
+  --ink: #ffffff;
+  --ink-2: #c3c2b7;
+  --muted: #898781;
+  --grid: #2c2c2a;
+  --baseline: #383835;
+  --accent: #d95926;   /* Rust: the one highlighted series */
+  --deemph: #686761;   /* every other stack */
+  --hair: rgba(255,255,255,0.10);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: var(--bg); }
+body {
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  -webkit-print-color-adjust: exact; print-color-adjust: exact;
+}
+ul { list-style: none; }
+
+.slide {
+  width: 1080px; height: 1350px;
+  padding: 72px 80px 64px;
+  display: flex; flex-direction: column;
+  position: relative; overflow: hidden;
+  background: var(--bg);
+  break-after: page;
+}
+.slide:last-child { break-after: auto; }
+
+/* chrome */
+.top { display: flex; justify-content: space-between; align-items: center;
+  font-size: 24px; font-weight: 600; color: var(--muted); }
+.brand { display: flex; align-items: center; gap: 14px; color: var(--ink-2); letter-spacing: 0.01em; }
+.brand::before { content: ""; width: 14px; height: 14px; border-radius: 3px; background: var(--accent); }
+.page { font-variant-numeric: tabular-nums; letter-spacing: 0.04em; }
+.mock { position: absolute; top: 70px; left: 50%; transform: translateX(-50%);
+  font-size: 17px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--muted); border: 1.5px solid var(--baseline); border-radius: 999px; padding: 6px 16px; }
+.kicker { font-size: 24px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+.title { font-size: 72px; font-weight: 800; letter-spacing: -0.03em; line-height: 1.04; }
+.sub { font-size: 33px; line-height: 1.38; color: var(--ink-2); }
+.sub b { color: var(--ink); font-weight: 700; }
+.fine { font-size: 21px; line-height: 1.5; color: var(--muted); }
+.footer { margin-top: auto; padding-top: 26px; border-top: 1px solid var(--grid); }
+.key { display: inline-block; width: 18px; height: 18px; border-radius: 4px; background: var(--deemph); flex: none; }
+.key.accent { background: var(--accent); }
+
+/* 1. cover */
+.cover .cover-body { margin-top: 120px; }
+.cover .cover-title { font-size: 112px; font-weight: 800; letter-spacing: -0.035em; line-height: 1.0; margin-top: 30px; }
+.cover .sub { margin-top: 40px; font-size: 38px; }
+.hero2 { margin-top: 110px; display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+.h-num { font-size: 172px; font-weight: 800; letter-spacing: -0.05em; line-height: 0.82; }
+.h-lab { margin-top: 26px; font-size: 30px; line-height: 1.3; color: var(--ink-2); }
+.h-lab b { color: var(--ink); font-weight: 700; }
+.h-lab .vs { color: var(--muted); }
+.hero-cap2 { margin-top: 44px; font-size: 32px; line-height: 1.38; color: var(--ink-2); }
+.hero-cap2 b { color: var(--ink); font-weight: 700; }
+.hero-rule { width: 120px; height: 8px; border-radius: 0 4px 4px 0; background: var(--accent); margin-top: 40px; }
+.cover .footer { display: flex; justify-content: space-between; align-items: center; }
+.swipe { font-size: 26px; font-weight: 700; color: var(--ink); display: inline-flex; align-items: center; gap: 10px; }
+
+/* 2. the test */
+.test .title { margin-top: 64px; }
+.test .sub { margin-top: 18px; }
+.card { background: var(--surface); border: 1px solid var(--hair); border-radius: 20px; padding: 34px 38px; }
+.endpoint { margin-top: 48px; }
+.code { font-family: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+  font-size: 27px; line-height: 1.5; color: var(--ink); word-break: break-all; }
+.code .m { color: var(--muted); }
+.endpoint .cap { margin-top: 20px; font-size: 26px; line-height: 1.45; color: var(--ink-2); }
+.cols { display: grid; grid-template-columns: 380px 1fr; gap: 56px; margin-top: 56px; }
+.col-h { font-size: 22px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted);
+  display: flex; align-items: center; gap: 14px; }
+.stacks li, .rules li { font-size: 29px; line-height: 1.3; color: var(--ink-2); display: flex; align-items: center; gap: 18px; }
+.stacks li { margin-top: 26px; }
+.stacks li b { color: var(--ink); font-weight: 700; }
+.rules li { margin-top: 22px; align-items: flex-start; }
+.rules li::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--muted); margin-top: 14px; flex: none; }
+.rules li b { color: var(--ink); font-weight: 700; }
+
+/* 3. results */
+.results .title { margin-top: 64px; }
+.results .sub { margin-top: 18px; font-size: 31px; }
+.panel-h { display: flex; justify-content: space-between; align-items: baseline; }
+.panel-t { font-size: 30px; font-weight: 700; }
+.panel-n { font-size: 22px; color: var(--muted); }
+.main-panel { margin-top: 64px; }
+.bars { margin-top: 30px; display: flex; flex-direction: column; gap: 22px; }
+.row { display: grid; align-items: center; }
+.main-panel .row { grid-template-columns: 210px 1fr; height: 60px; }
+.lab { display: flex; flex-direction: column; line-height: 1.12; }
+.lab .l1 { font-size: 27px; font-weight: 700; color: var(--ink); }
+.lab .l2 { font-size: 22px; color: var(--muted); margin-top: 2px; }
+.row.dim .lab .l1 { color: var(--ink-2); font-weight: 600; }
+.track { position: relative; height: 100%; display: flex; align-items: center; }
+.track::before { content: ""; position: absolute; left: 0; top: -11px; bottom: -11px; width: 2px; background: var(--baseline); }
+.bar { height: 42px; background: var(--deemph); border-radius: 0 6px 6px 0; flex: none; }
+.row.hl .bar { background: var(--accent); }
+.val { margin-left: 18px; font-size: 30px; font-weight: 700; color: var(--ink); white-space: nowrap; }
+.row.dim .val { color: var(--ink-2); font-weight: 600; }
+.mini-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; margin-top: 64px; }
+.mini .panel-t { font-size: 25px; }
+.mini .panel-n { font-size: 20px; display: block; margin-top: 4px; }
+.mini .bars { gap: 14px; margin-top: 24px; }
+.mini .row { grid-template-columns: 112px 1fr; height: 40px; }
+.mini .lab .l1 { font-size: 22px; }
+.mini .track::before { top: -7px; bottom: -7px; }
+.mini .bar { height: 24px; border-radius: 0 4px 4px 0; }
+.mini .val { font-size: 22px; margin-left: 12px; }
+
+/* 4. money */
+.money .title { margin-top: 44px; }
+.money .sub { margin-top: 18px; }
+.company { margin-top: 32px; }
+.money .card { padding: 28px 34px; }
+.company + .company { margin-top: 22px; }
+.c-head { display: flex; justify-content: space-between; align-items: baseline; }
+.c-name { font-size: 34px; font-weight: 800; letter-spacing: -0.01em; }
+.c-bill { font-size: 25px; color: var(--ink-2); }
+.billbars { margin-top: 18px; display: flex; flex-direction: column; gap: 12px; }
+.bb { display: grid; grid-template-columns: 130px 1fr 150px; align-items: center; height: 36px; }
+.bb-l { font-size: 22px; color: var(--muted); }
+.bb-t { position: relative; height: 100%; display: flex; align-items: center; }
+.bb-t::before { content: ""; position: absolute; left: 0; top: -6px; bottom: -6px; width: 2px; background: var(--baseline); }
+.bb-bar { height: 26px; border-radius: 0 5px 5px 0; background: var(--deemph); }
+.bb-bar.accent { background: var(--accent); }
+.bb-v { text-align: right; font-size: 25px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.bb-v.dim { color: var(--ink-2); font-weight: 600; }
+.c-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--grid); }
+.st-l { display: block; font-size: 21px; color: var(--muted); }
+.st-v { display: block; font-size: 32px; font-weight: 700; margin-top: 4px; letter-spacing: -0.01em; }
+.verdict { margin-top: 16px; font-size: 25px; line-height: 1.4; color: var(--ink-2); display: flex; gap: 14px; align-items: flex-start; }
+.verdict b { color: var(--ink); font-weight: 700; }
+.v-ic { flex: none; width: 34px; height: 34px; border-radius: 8px; display: grid; place-items: center;
+  font-size: 21px; font-weight: 800; margin-top: 1px; background: var(--surface); color: var(--ink-2); border: 1px solid var(--hair); }
+.v-ic.go { background: var(--accent); color: #fff; border-color: transparent; }
+
+/* 5. verdict + cta */
+.verdict-slide .kicker2 { margin-top: 64px; font-size: 34px; color: var(--ink-2); }
+.verdict-slide .title { margin-top: 12px; font-size: 76px; }
+.cols2 { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; margin-top: 56px; }
+.cols2 ul li { font-size: 25px; line-height: 1.38; color: var(--ink-2); margin-top: 20px; display: flex; gap: 16px; }
+.cols2 ul li::before { content: ""; width: 10px; height: 10px; border-radius: 2px; background: var(--muted); margin-top: 14px; flex: none; }
+.cols2 .yes li::before { background: var(--accent); }
+.proof { margin-top: 56px; display: flex; flex-direction: column; gap: 14px; }
+.proof .col-h { margin-bottom: 4px; }
+.proof div { font-size: 23px; line-height: 1.45; color: var(--ink-2); }
+.proof b { color: var(--ink); font-weight: 700; }
+.cta { margin-top: auto; background: var(--surface); border: 1px solid var(--hair); border-radius: 22px;
+  padding: 38px 42px; position: relative; overflow: hidden; }
+.cta::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 8px; background: var(--accent); }
+.cta-main { font-size: 34px; font-weight: 700; line-height: 1.3; letter-spacing: -0.01em; }
+.cta-sub { margin-top: 16px; font-size: 24px; color: var(--ink-2); }
+</style>
+</head>
+<body>
+
+<!-- 1 / cover -->
+<section class="slide cover">
+  <div class="top"><span class="brand">nandor.build</span><span class="page">1/5</span></div>
+  <div class="cover-body">
+    <div class="kicker">API benchmark · Rust vs Node vs Python</div>
+    <h1 class="cover-title" data-k="coverTitle">Rewrite it in Rust:<br>hype or worth it?</h1>
+    <p class="sub">Same API. Same data. 1 vCPU each.<br>Then I put a price tag on it.</p>
+  </div>
+  <div class="hero2">
+    <div>
+      <div class="h-num" data-k="ratioExpress"></div>
+      <div class="h-lab"><span class="vs">vs</span> <b>Node.js</b><br>Express</div>
+    </div>
+    <div>
+      <div class="h-num" data-k="ratioFastapi"></div>
+      <div class="h-lab"><span class="vs">vs</span> <b>Python</b><br>FastAPI</div>
+    </div>
+  </div>
+  <p class="hero-cap2" data-k="coverCap"></p>
+  <div class="hero-rule"></div>
+  <div class="footer">
+    <span class="fine">Rust (Axum) · Node.js (Fastify, Express) · Python (FastAPI)</span>
+    <span class="swipe">Swipe <svg width="26" height="20" viewBox="0 0 26 20" aria-hidden="true"><path d="M2 10h20M14 3l8 7-8 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+  </div>
+</section>
+
+<!-- 2 / the test -->
+<section class="slide test">
+  <div class="top"><span class="brand">nandor.build</span><span class="page">2/5</span></div>
+  <h2 class="title">The test</h2>
+  <p class="sub">One endpoint. Four stacks. Same rules for all of them.</p>
+  <div class="card endpoint">
+    <div class="code">GET /products?category=books<br><span class="m">&amp;</span>min_price=100<span class="m">&amp;</span>max_price=800<br><span class="m">&amp;</span>sort=price_desc<span class="m">&amp;</span>limit=50</div>
+    <div class="cap" data-k="endpointCap"></div>
+  </div>
+  <div class="cols">
+    <div>
+      <div class="col-h">Contenders</div>
+      <ul class="stacks" id="stacks"></ul>
+    </div>
+    <div>
+      <div class="col-h">Rules</div>
+      <ul class="rules">
+        <li><span>Docker: <b>1 vCPU</b>, 512 MB each</span></li>
+        <li><span>Production builds, no caching</span></li>
+        <li><span data-k="loadRule"></span></li>
+        <li><span data-k="runsRule"></span></li>
+        <li><span>Same JSON output, verified</span></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer"><span class="fine" data-k="hwLine"></span></div>
+</section>
+
+<!-- 3 / results -->
+<section class="slide results" id="results">
+  <div class="top"><span class="brand">nandor.build</span><span class="page">3/5</span></div>
+  <h2 class="title">Same API. Same 1 vCPU.</h2>
+  <p class="sub" data-k="resultsSub"></p>
+  <div class="main-panel">
+    <div class="panel-h"><span class="panel-t">Requests per second</span><span class="panel-n">higher is better</span></div>
+    <div class="bars" id="bars-rps"></div>
+  </div>
+  <div class="mini-wrap">
+    <div class="mini">
+      <div class="panel-t" data-k="p99Title"></div><span class="panel-n">lower is better</span>
+      <div class="bars" id="bars-p99"></div>
+    </div>
+    <div class="mini">
+      <div class="panel-t">Peak memory under load</div><span class="panel-n">lower is better</span>
+      <div class="bars" id="bars-mem"></div>
+    </div>
+  </div>
+  <div class="footer"><span class="fine" data-k="methodLine"></span></div>
+</section>
+
+<!-- 4 / money -->
+<section class="slide money">
+  <div class="top"><span class="brand">nandor.build</span><span class="page">4/5</span></div>
+  <h2 class="title">Now put a bill next to it.</h2>
+  <p class="sub">Two companies, same kind of API on Node.js (Express).<br>Same benchmark. <b>Opposite answers.</b></p>
+  <div id="companies"></div>
+  <div class="footer"><span class="fine" data-k="moneyNote"></span></div>
+</section>
+
+<!-- 5 / verdict + cta -->
+<section class="slide verdict-slide">
+  <div class="top"><span class="brand">nandor.build</span><span class="page">5/5</span></div>
+  <div class="kicker2">So, hype or worth it?</div>
+  <h2 class="title">Neither. It's a payback calculation.</h2>
+  <div class="cols2">
+    <div>
+      <div class="col-h"><i class="key accent"></i>Worth it when</div>
+      <ul class="yes">
+        <li>App servers are a top cloud cost</li>
+        <li>Hot paths burn CPU: JSON, parsing, pricing</li>
+        <li>High, steady traffic</li>
+        <li>p99 latency is a product feature</li>
+      </ul>
+    </div>
+    <div>
+      <div class="col-h"><i class="key"></i>Hype when</div>
+      <ul>
+        <li>No product-market fit yet</li>
+        <li>The database is most of the bill</li>
+        <li>A cheaper fix exists: a cache, an&nbsp;index, a&nbsp;slow query</li>
+        <li>Your team can't maintain Rust</li>
+      </ul>
+    </div>
+  </div>
+  <div class="proof">
+    <div class="col-h">Real world</div>
+    <div><b>Grab, 2025.</b> Go → Rust at the same traffic: 20 cores down to 4.5.</div>
+    <div><b>Microsoft, 2025.</b> Ported the TypeScript compiler to Go, not Rust: a port kept the existing structure, a rewrite would not.</div>
+  </div>
+  <div class="cta">
+    <div class="cta-main">Send me your stack and monthly server spend.<br>I'll tell you which company you are. Free.</div>
+    <div class="cta-sub">nandor.build · DM me here on LinkedIn</div>
+  </div>
+</section>
+
+<script>
+const ICON_CHECK = '<svg width="18" height="18" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3 3 7-7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const ICON_WAIT = '<svg width="18" height="18" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8 4.8V8l2.2 1.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const ICON_CROSS = '<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>';
+// window.render(view) is called by render.mjs with fully formatted strings + raw numbers.
+window.render = function (v) {
+  document.querySelectorAll('[data-k]').forEach(el => {
+    const k = el.dataset.k;
+    if (k in v.text) el.innerHTML = v.text[k];
+  });
+
+  // Contenders list on slide 2, same order as the charts (fastest first)
+  const st = document.getElementById('stacks');
+  st.innerHTML = v.stacks.map(s =>
+    '<li><i class="key' + (s.highlight ? ' accent' : '') + '"></i><span><b>' + s.lang + '</b> · ' + s.fw + '</span></li>').join('');
+
+  // Horizontal bars: value at the tip, Rust highlighted, all other stacks de-emphasised.
+  function bars(id, rows, opts) {
+    const host = document.getElementById(id);
+    host.innerHTML = '';
+    const max = Math.max(...rows.map(r => r.value));
+    rows.forEach(r => {
+      const row = document.createElement('div');
+      row.className = 'row ' + (r.highlight ? 'hl' : 'dim');
+      row.innerHTML =
+        '<div class="lab"><span class="l1">' + (opts.short ? r.fw : r.lang) + '</span>' +
+        (opts.short ? '' : '<span class="l2">' + r.fw + '</span>') + '</div>' +
+        '<div class="track"><div class="bar"></div><span class="val">' + r.text + '</span></div>';
+      host.appendChild(row);
+    });
+    // size bars in px so the value label always fits outside the bar end
+    host.querySelectorAll('.row').forEach((row, i) => {
+      const track = row.querySelector('.track');
+      const label = row.querySelector('.val');
+      const room = track.clientWidth - label.offsetWidth - opts.labelGap - 4;
+      const w = Math.max(6, Math.round(room * rows[i].value / max));
+      row.querySelector('.bar').style.width = w + 'px';
+    });
+  }
+  bars('bars-rps', v.rows.rps, { short: false, labelGap: 18 });
+  bars('bars-p99', v.rows.p99, { short: true, labelGap: 12 });
+  bars('bars-mem', v.rows.mem, { short: true, labelGap: 12 });
+
+  // Company cards
+  const host = document.getElementById('companies');
+  host.innerHTML = v.companies.map(c => `
+    <div class="company card">
+      <div class="c-head"><span class="c-name">${c.name}</span><span class="c-bill">${c.billText} on app servers</span></div>
+      <div class="billbars">
+        <div class="bb"><span class="bb-l">Today</span><div class="bb-t"><div class="bb-bar" style="width:100%"></div></div><span class="bb-v dim">${c.billShort}</span></div>
+        <div class="bb"><span class="bb-l">On Rust</span><div class="bb-t"><div class="bb-bar accent" style="width:${(c.rustShare * 100).toFixed(1)}%"></div></div><span class="bb-v">${c.rustBillShort}</span></div>
+      </div>
+      <div class="c-stats">
+        <div><span class="st-l">Saves</span><span class="st-v">${c.savingsText}</span></div>
+        <div><span class="st-l">${c.rewriteText} rewrite pays back in</span><span class="st-v">${c.paybackText}</span></div>
+      </div>
+      <div class="verdict"><span class="v-ic ${c.verdict === 'go' ? 'go' : ''}">${c.verdict === 'go' ? ICON_CHECK : c.verdict === 'not_yet' ? ICON_WAIT : ICON_CROSS}</span><span>${c.verdictHtml}</span></div>
+    </div>`).join('');
+
+  document.querySelectorAll('.mock').forEach(e => e.remove());
+  if (v.mock) document.querySelectorAll('.slide').forEach(s => {
+    const b = document.createElement('div'); b.className = 'mock'; b.textContent = 'Mockup · placeholder numbers';
+    s.appendChild(b);
+  });
+  return true;
+};
+</script>
+</body>
+</html>

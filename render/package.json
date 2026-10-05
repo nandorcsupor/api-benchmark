@@ -1,0 +1,13 @@
+{
+  "name": "carousel-render",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "mock": "node render.mjs mock-results.json config.json ../out-mock",
+    "real": "node render.mjs ../results/results.json config.json ../out"
+  },
+  "dependencies": {
+    "@fontsource/inter": "^5.2.8",
+    "playwright": "^1.56.0"
+  }
+}
